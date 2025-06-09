@@ -34,7 +34,12 @@ export class GifService {
         params: this.options,
       })
       .subscribe(data => {
-        this.trendingGifs.set(GifMapper.toEntities(data.data));
+        this.trendingGifs.set(
+          GifMapper.toEntities(data.data).filter(
+            (gif, index, self) => index === self.findIndex(g => g.id === gif.id)
+          )
+        );
+        console.log('Trending GIFs fetched:', this.trendingGifs());
       });
   }
 }
