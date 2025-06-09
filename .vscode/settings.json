@@ -1,5 +1,13 @@
 {
-  "cSpell.words": ["gifs"],
+  "cSpell.words": [
+    "bitly",
+    "downsampled",
+    "gifs",
+    "giphy",
+    "GIPHY",
+    "onsent",
+    "WAAK"
+  ],
   "angular-schematics.schematicsDefaultOptions": {
     "angular-component": {
       "skipChangeDetectionOnPush": true

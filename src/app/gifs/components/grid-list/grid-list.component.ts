@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { GifService } from '../../services/gif-service';
 import { GridListItemComponent } from '../grid-list-item/grid-list-item.component';
 
 @Component({
@@ -7,7 +8,9 @@ import { GridListItemComponent } from '../grid-list-item/grid-list-item.componen
   templateUrl: './grid-list.component.html',
 })
 export class GridListComponent {
-  images =  [
+  gifService = inject(GifService);
+
+  images = signal<string[]>([
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg',
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg',
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg',
@@ -20,5 +23,5 @@ export class GridListComponent {
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-9.jpg',
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-10.jpg',
     'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-11.jpg',
-  ];
+  ]);
 }
