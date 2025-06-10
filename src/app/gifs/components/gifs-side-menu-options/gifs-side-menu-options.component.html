@@ -17,4 +17,22 @@
       </div>
     </a>
   }
+
+  @if (this.searchRecordMenu().length > 0) {
+    <h3 class="text-md mt-6 mb-2 font-bold text-white">Búsquedas recientes</h3>
+  }
+
+  @for (recordKey of this.searchRecordMenu(); track recordKey.route) {
+    <a
+      [routerLink]="recordKey.route"
+      routerLinkActive="bg-blue-800"
+      class="inline-flex w-full items-center space-x-2 border-b border-slate-700 px-2 py-3 transition duration-150 ease-linear hover:bg-white/5">
+      <div>
+        <i [className]="recordKey.icon"></i>
+      </div>
+      <span class="text-lg leading-5 font-bold text-white">{{
+        recordKey.label
+      }}</span>
+    </a>
+  }
 </div>

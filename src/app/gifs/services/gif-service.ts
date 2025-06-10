@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type { GifEntity } from '../interfaces/gif-entity.interface';
 import type { GifResponse } from '../interfaces/gif-response.interface';
@@ -13,6 +14,19 @@ export class GifService {
 
   trendingGifs = signal<GifEntity[]>([]);
   searchedGifs = signal<GifEntity[]>([]);
+
+  searchRecord = signal<Record<string, GifEntity[]>>(
+    JSON.parse(localStorage.getItem('gifSearchRecord') || '{}')
+  );
+
+  searchRecordKeys = computed(() => {
+    localStorage.setItem(
+      'gifSearchRecord',
+      JSON.stringify(this.searchRecord())
+    );
+
+    return Object.keys(this.searchRecord());
+  });
 
   constructor() {
     this.getTrendingGifs();
@@ -62,12 +76,23 @@ export class GifService {
       .get<GifResponse>(`${this.domain}${endpoint}`, {
         params: options,
       })
-      .subscribe(data => {
-        this.searchedGifs.set(
-          GifMapper.toEntities(data.data).filter(
+      .pipe(
+        map(({ data }) =>
+          GifMapper.toEntities(data).filter(
             (gif, index, self) => index === self.findIndex(g => g.id === gif.id)
           )
-        );
+        )
+      )
+      .pipe(
+        tap(gifs => {
+          this.searchRecord.update(record => ({
+            [query.trim().toLowerCase()]: gifs,
+            ...record,
+          }));
+        })
+      )
+      .subscribe(data => {
+        this.searchedGifs.set(data);
         console.log(`Searched GIFs for "${query}":`, this.searchedGifs());
       });
   }
