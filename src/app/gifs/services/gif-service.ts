@@ -12,26 +12,28 @@ export class GifService {
   private readonly http = inject(HttpClient);
 
   trendingGifs = signal<GifEntity[]>([]);
+  searchedGifs = signal<GifEntity[]>([]);
 
   constructor() {
     this.getTrendingGifs();
   }
 
   private readonly domain = environment.giphyDomain;
-  private readonly endpoint = '/v1/gifs/trending';
-
-  private readonly options = {
-    api_key: environment.giphyApiKey,
-    rating: 'g',
-    bundle: 'messaging_non_clips',
-    limit: '25',
-    offset: '0',
-  };
 
   getTrendingGifs() {
+    const endpoint = '/v1/gifs/trending';
+
+    const options = {
+      api_key: environment.giphyApiKey,
+      rating: 'g',
+      bundle: 'messaging_non_clips',
+      limit: '25',
+      offset: '0',
+    };
+
     this.http
-      .get<GifResponse>(`${this.domain}${this.endpoint}`, {
-        params: this.options,
+      .get<GifResponse>(`${this.domain}${endpoint}`, {
+        params: options,
       })
       .subscribe(data => {
         this.trendingGifs.set(
@@ -40,6 +42,33 @@ export class GifService {
           )
         );
         console.log('Trending GIFs fetched:', this.trendingGifs());
+      });
+  }
+
+  searchGifs(query: string) {
+    const endpoint = '/v1/gifs/search';
+
+    const options = {
+      api_key: environment.giphyApiKey,
+      rating: 'g',
+      bundle: 'messaging_non_clips',
+      limit: '25',
+      offset: '0',
+      lang: 'es',
+      q: query,
+    };
+
+    this.http
+      .get<GifResponse>(`${this.domain}${endpoint}`, {
+        params: options,
+      })
+      .subscribe(data => {
+        this.searchedGifs.set(
+          GifMapper.toEntities(data.data).filter(
+            (gif, index, self) => index === self.findIndex(g => g.id === gif.id)
+          )
+        );
+        console.log(`Searched GIFs for "${query}":`, this.searchedGifs());
       });
   }
 }
